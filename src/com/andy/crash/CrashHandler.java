@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.andy.crash;
 
 import java.io.File;
@@ -29,47 +26,96 @@ import android.util.Log;
 import android.widget.SimpleAdapter;
 
 /**
- * @author andy
+ * @author Andy Liu
+ * @version 1.0.0
+ * @since 2015.12.4
+ * 
+ *  This is a helper class used for record any unexpected android app 
+ *  crash infomation on sdcard files. 
+ *  
  *
  */
 public class CrashHandler implements UncaughtExceptionHandler {
 
+	/*
+	 * 		Log tag
+	 */
 	private static final String TAG = CrashHandler.class.getSimpleName();
 
+	/*
+	 * 		Default log directory on sdcard
+	 * */
 	private static final String LOG_DIR = "crashlog";
 
+	/*
+	 * 		Log directory set by the user. If this variable 
+	 * 		is not set, then LOG_DIR will be used.
+	 * */
 	private static String USER_SET_LOG_DIR = null;
 
-	// singleton
+	/*
+	 * 		Singleton, lazy pattern.
+	 * */
 	private static CrashHandler INSTANCE = new CrashHandler();
 
+	/*
+	 * 		Reference to the context of the project.
+	 * */
 	private Context mContext;
 
+	/*
+	 * 		Default UncaughtExceptionHandler, used to handle the uncaught
+	 * 		exception when handleException() method returns false
+	 * */
 	private UncaughtExceptionHandler mDefaultHandler;
 
-	// store device info and exception info
+	/*
+	 * 		 Store device infomation and exception infomation
+	 * */
 	private Map<String, String> info = new HashMap<String, String>();
 
+	
+	/*
+	 * 		private constructor, ensuring the singleton pattern.
+	 * */
 	private CrashHandler() {
 	}
 
+	
+	/*
+	 * 		Get the singleton instance.
+	 * */
 	public static CrashHandler getInstance() {
 		return INSTANCE;
 	}
 
+	
+	/*
+	 * 		Initialization. Keep default exception handler in mDefaultHandler,
+	 * 		and set this as default exception handler
+	 * 		@param context  the application context 
+	 * */
 	public void init(Context context) {
 		mContext = context;
 		mDefaultHandler = Thread.getDefaultUncaughtExceptionHandler();
 		Thread.setDefaultUncaughtExceptionHandler(this);
 	}
 
+	/*
+	 * 		Set crash log storage directory
+	 * 		@param name  the directory name on sdcard, which will be created
+	 * 		if not existed
+	 * */
 	public void setCrashLogDirectory(String name) {
 		USER_SET_LOG_DIR = name;
 	}
 
-	/**
-	 * When exception uncaught occurs, triggers this method
-	 */
+	/*
+	 * 		 When uncaught exception occurs, triggers this method
+	 * 		 @param 
+	 * 			thread  the thread in which generates the exception
+	 * 			ex  the Throwable object	 
+	 * */
 	@Override
 	public void uncaughtException(Thread thread, Throwable ex) {
 		Log.d("", "--> invoke uncaught exception handler");
@@ -80,16 +126,21 @@ public class CrashHandler implements UncaughtExceptionHandler {
 				// sleep 3 seconds , then exit , in between this, you can upload error info onto server
 				Thread.sleep(3000);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
 			android.os.Process.killProcess(Process.myPid());
 			System.exit(1);
 		}
 	}
 
-	public boolean handleException( Throwable ex) {
+	
+	/*	
+	 * 		Method to handle Throwable ex.
+	 * 		@param ex  the Throwable object
+	 * 		@return  true if the Throwable is properly handled
+	 * 				 false otherwise
+	 * */
+	public boolean handleException(Throwable ex) {
 		Log.d("", "-->invoke handle exception");
 		if (ex == null) {
 			return false;
@@ -99,6 +150,12 @@ public class CrashHandler implements UncaughtExceptionHandler {
 		return true;
 	}
 
+	
+	/*
+	 * 		Collect device infomation and store them in variable info 
+	 * 		@param context  the application context
+	 * 		
+	 * */
 	private void collectDeviceInfo(Context context) {
 
 		try {
@@ -132,6 +189,10 @@ public class CrashHandler implements UncaughtExceptionHandler {
 
 	}
 
+	/*
+	 * 		Save the crash infomatin on files in the specified directory on sdcard.
+	 * 		@param ex  the Throwable object
+	 * */
 	private void saveCrashInfoToDisk(Throwable ex) {
 
 		if (ex == null)
