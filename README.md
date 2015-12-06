@@ -1,6 +1,22 @@
 # RecordCrashInfo
 A tool to record android app crash infomation on sd card. Default diretory keeping error info files is the *crash* folder under your sd card directory.
 
+## Dependency
+RecordCrashInfo is available on Maven Central.<br/>
+Gradle dependency for your android app:
+```
+compile 'com.github.lkasdolka:record-crash-info:1.0.0'
+```
+or Maven:
+```
+<dependency>
+    <groupId>com.github.lkasdolka</groupId>
+    <artifactId>record-crash-info</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+
+
 ## Initialization
 
 Init the CrashHandler in **onCreate()** method in android.app.Application's subclass:
@@ -9,12 +25,13 @@ Init the CrashHandler in **onCreate()** method in android.app.Application's subc
 ```
 
 ## Set Directory
-The *default* error log storage diectory is 
+The *default* crash log storage diectory is 
 ```
-Environment.getExternalStorageDirectory()+File.seperator+"crash"
+Environment.getExternalStorageDirectory()+File.seperator+"crashlog"
 ```
 
-Customize error log directory in **onCreate()** in android.app.Application's subclass:
+
+Customize crash log directory in **onCreate()** in android.app.Application's subclass:
 ```
   CrashHandler.getInstance().setCrashLogDirectory("myCrashLog");
 ```
@@ -24,4 +41,6 @@ Don't forget to add
 ```
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 ```
+
+
 
